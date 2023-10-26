@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<table>
+  {% for artigo in artigos %}
+    <tr>
+      <td>{{ artigo.id }}</td>
+      <td>{{ artigo.nome }}</td>
+      <td>{{ artigo.client }}</td>
+      <td>{{ artigo.cpf_cnpj }}</td>
+      <td>{{ artigo.endereco }}</td>
+      <td>{{ artigo.email }}</td>
+    </tr>
+  {% endfor %}
+</table>
+</body>
+</html>
