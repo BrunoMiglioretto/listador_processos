@@ -1,21 +1,27 @@
 from flask import Flask, render_template, request
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.sql.expression import select
+from flask_sqlalchemy import SQLAlchemy
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from typing import Any
+from sqlalchemy.orm import DeclarativeBase
+
+# SQLAlchemy
+instance = f"mysql+pymysql://root:vBst&Ebb5hw@localhost:3306/escritorio"
+
+engine = create_engine(url=instance, echo=True)
+session = Session(bind=engine, autocommit=False, autoflush=True)
+
 
 class Base(DeclarativeBase):
-    pass
+    def __init__(self, **kw: Any):
+        super().__init__(**kw)
 
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:vBst&Ebb5hw@localhost:3306/escritorio'
-
-db = SQLAlchemy(model_class=Base)
-db.init_app(app)
-
-
-class Pessoa(db.Model):
+class Pessoa(Base):
+    __tablename__ = "pessoas"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     nome: Mapped[str] = mapped_column(String, nullable=False)
     cliente: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -24,7 +30,8 @@ class Pessoa(db.Model):
     email: Mapped[str] = mapped_column(String)
 
 
-class Processo(db.Model):
+class Processo(Base):
+    __tablename__ = "processos"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     advogado_id: Mapped[int] = mapped_column(Integer)
     cliente_id: Mapped[int] = mapped_column(Integer)
@@ -33,12 +40,24 @@ class Processo(db.Model):
     arquivo: Mapped[int] = mapped_column(Integer)
 
 
+# Flask
+app = Flask(__name__)
+
+
 @app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@app.route("/buscar_artigos/")
-def buscar_artigos():
-    artigos = Processo.query.all()
-    return render_template("lista_artigos.html", artigos=artigos)
+@app.route("/lista_processo/")
+def lista_processo():
+    processos = session.query(
+        Processo,
+        # Processo.advogado_id,
+        # Processo.cliente_id,
+        # Processo.numero_processo,
+        # Processo.proximo_prazo,
+        # Processo.arquivo,
+    ).all()
+
+    return render_template("lista_processos.html", processos=processos)
