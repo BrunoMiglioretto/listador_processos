@@ -53,11 +53,11 @@ def index():
 def lista_processo():
     processos = session.query(
         Processo,
-        # Processo.advogado_id,
-        # Processo.cliente_id,
-        # Processo.numero_processo,
-        # Processo.proximo_prazo,
-        # Processo.arquivo,
+        Processo.advogado_id,
+        Processo.cliente_id,
+        Processo.numero_processo,
+        Processo.proximo_prazo,
+        Processo.arquivo,
     ).all()
 
     return render_template("lista_processos.html", processos=processos)
